@@ -1,15 +1,25 @@
 <?php
 
-namespace Media\Service;
+namespace SearchModules\Service;
+
 use Exception;
 
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface,
     ZfcBase\EventManager\EventProvider;
 
-use Media\Entity\Image as ImageEntity;
+use ZendSearch\Lucene\Lucene,
+    ZendSearch\Lucene\Document,
+    ZendSearch\Lucene\Document\Field,
+    ZendSearch\Lucene\Index\Term,
+    ZendSearch\Lucene\Search\QueryParser,
+    ZendSearch\Lucene\Search\Query\Term as QueryTerm,
+    ZendSearch\Lucene\Search\Query\Boolean;
 
-class Media extends EventProvider implements ServiceLocatorAwareInterface
+use SearchModules\Entity\SearchTerm as SearchTerm;
+
+
+class Search extends EventProvider implements ServiceLocatorAwareInterface
 {
 
     /**
@@ -23,14 +33,9 @@ class Media extends EventProvider implements ServiceLocatorAwareInterface
     protected $entityManager;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository|\Media\Entity\Image
+     * @var \Doctrine\Common\Persistence\ObjectRepository|\SearchModules\Entity\Term
      */
     protected $repository;
-
-    /**
-     * @var Imagine\Gd\Imagine
-     * */
-    protected $imagine;
 
     /**
      *
@@ -38,61 +43,52 @@ class Media extends EventProvider implements ServiceLocatorAwareInterface
      */
     protected $options;
 
-    public function uploadImage($mediaEntity, $upload = array()){
-        $uploader = $this->getServiceLocator()->get('UploadCenter\Service\Uploader')
-                            ->setOptions($this->getOptions());
-        try{
-            $uploader->upload($mediaEntity, $upload['upload']);
-            
-            //get width and height for rendering
-            $image = $this->getImagine()->open( $uploader->getFilename() );
-            
-            $mediaEntity
-                ->setWidth( $image->getSize()->getWidth() )
-                ->setHeight( $image->getSize()->getHeight() );
-                
-            $this->create($mediaEntity);
-            return $mediaEntity;
-
-        } catch(Exception $e){
-
-            switch($e->getMessage()){
-                case 'file exists' : 
-                    
-                    return $this->getRepository()->findOneBy(array(
-                        'hash'=>$uploader->getHash()
-                    ));
-
-                break;
-            }
-
-            throw new Exception('invalid upload');
-        }
-    }
-
     /**
-     * @var ImageEntity $mediaEntity
+     * @var SearchTerm $searchEntity
      * */
-    public function create(ImageEntity $mediaEntity)
+    protected $searchEntity = 'SearchModules\Entity\SearchTerm';
+
+    public function create(SearchTerm $searchEntity)
     {
-        $this->getEntityManager()->persist($mediaEntity);
-        $this->getEntityManager()->flush($mediaEntity);
+        $this->getEntityManager()->persist($searchEntity);
+        $this->getEntityManager()->flush($searchEntity);
     }
 
-    /**
-    * @var ImageEntity $mediaEntity
-    */
-    public function edit(ImageEntity $mediaEntity)
-    {
-        $this->getEntityManager()->flush();
+    public function newSearchEntity(){
+        return new $this->searchEntity;
     }
 
-    /**
-    * @var ImageEntity $mediaEntity
-    */
-    public function delete(ImageEntity $mediaEntity){
-        $this->getEntityManager()->remove($mediaEntity);
-        $this->getEntityManager()->flush();
+    public function searchIndex($entity)
+    {
+        //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.searching.html#
+        //http://stackoverflow.com/questions/7805996/zend-search-lucene-matches
+        //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.index-creation.html
+        $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
+        $index = Lucene::open($where);
+        // echo $index->count();
+        // echo $index->numDocs();
+        // 
+        
+        // $index = Lucene::create( $where  );
+
+        // $doc = new Document();
+
+        // // Store document URL to identify it in the search results
+        // $doc->addField(Field::Text('url', '/news/some-other-post'));
+
+        // // Index document contents
+        // $doc->addField(Field::UnStored('contents', '<p>some content</p>'));
+
+        // // Add document to the index
+        // $index->addDocument($doc);
+
+        $query = QueryParser::parse( $entity->getTerm() );
+
+        $hits = $index->find($query);
+        $entity->setCount( count($hits) );
+        // $this->create($entity);
+
+        return $hits;
     }
 
     /**
@@ -152,17 +148,17 @@ class Media extends EventProvider implements ServiceLocatorAwareInterface
     /**
      * Gets the value of repository.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository|\Media\Entity\Image
+     * @return \Doctrine\Common\Persistence\ObjectRepository|\SearchModules\Entity\Term
      */
     public function getRepository()
     {
-        return $this->getEntityManager()->getRepository('Media\Entity\Image');
+        return $this->getEntityManager()->getRepository('SearchModules\Entity\Term');
     }
 
     /**
      * Sets the value of repository.
      *
-     * @param \Doctrine\Common\Persistence\ObjectRepository|\Media\Entity\Image $repository the repository
+     * @param \Doctrine\Common\Persistence\ObjectRepository|\SearchModules\Entity\Term $repository the repository
      *
      * @return self
      */
@@ -174,25 +170,6 @@ class Media extends EventProvider implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Gets the value of imagine.
-     *
-     * @return Imagine\Gd\Imagine
-     */
-    public function getImagine()
-    {
-        if(!$this->imagine){
-            $this->setImagine( $this->getServiceLocator()->get('Imagine\Gd\Imagine') );
-        }
-        return $this->imagine;
-    }
-
-    public function setImagine($imagine){
-        $this->imagine = $imagine;
-        return $this;
-    }
-
-
-    /**
      * get service options
      *
      * @return 
@@ -200,7 +177,7 @@ class Media extends EventProvider implements ServiceLocatorAwareInterface
     public function getOptions()
     {;
         if (!$this->options){//} instanceof ) {
-            $this->setOptions($this->getServiceLocator()->get('media_options'));
+            $this->setOptions($this->getServiceLocator()->get('search_options'));
         }
         return $this->options;
     }

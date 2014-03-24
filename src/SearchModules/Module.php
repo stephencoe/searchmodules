@@ -1,5 +1,5 @@
 <?php
-namespace SearchableModules;
+namespace SearchModules;
 
 use Zend\Loader\AutoloaderFactory;
 use Zend\Loader\StandardAutoloader;
@@ -7,7 +7,7 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
 /**
- * SearchableModules Module definition.
+ * SearchModules Module definition.
  */
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface
 {

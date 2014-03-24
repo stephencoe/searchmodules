@@ -1,5 +1,5 @@
 <?php
-namespace SearchableModules;
+namespace SearchModules;
 
 return array(
 	//searchable modules are registered in this :)
@@ -47,27 +47,33 @@ return array(
     'bjyauthorize' => array(
         'resource_providers' => array(
             'BjyAuthorize\Provider\Resource\Config' => array(
-                'SearchableModules\Controller\Admin' => array(),
+                'SearchModules\Controller\Admin' => array(),
             ),
         ),
         'rule_providers'     => array(
             'BjyAuthorize\Provider\Rule\Config' => array(
                 'allow' => array(
                     // VIEW ITEMS
-                    array(array('editor'), 'SearchableModules\Controller\Admin', array('add', 'list')),
+                    array(array('editor'), 'SearchModules\Controller\Admin', array('add', 'list')),
                 )
             )
         ),
         'guards' => array(
             'BjyAuthorize\Guard\Controller' => array(
                 array(
-                    'controller' => 'SearchableModules\Controller\Admin',
+                    'controller' => 'SearchModules\Controller\Search',
+                    'action'=>array('index'),
+                    'roles' => array('guest')
+                ),
+
+                array(
+                    'controller' => 'SearchModules\Controller\Admin',
                     'roles' => array('editor'),
                     'action'=>array('index', 'add', 'edit'),
                 ),
 
                 array(
-                    'controller' => 'SearchableModules\Controller\Admin',
+                    'controller' => 'SearchModules\Controller\Admin',
                     'roles' => array('publisher'),
                 ),
             ),
@@ -87,7 +93,7 @@ return array(
             // 'Search'=>array(
             //     'icon'=>'entypo-search',
             //     'label' => 'Search Results',
-            //     'resource' => 'SearchableModules\Controller\Admin',
+            //     'resource' => 'SearchModules\Controller\Admin',
             //     'privilege'=>'list',
             //     'order'=>10,
             //     'route' => 'zfcadmin/searchresults',
@@ -108,7 +114,7 @@ return array(
                                 'id'     => '[0-9]+',
                             ),
                             'defaults' => array(
-                                'controller' => 'SearchableModules\Controller\Admin',
+                                'controller' => 'SearchModules\Controller\Admin',
                                 'action'     => 'index',
                             ),
                         ),
@@ -120,7 +126,7 @@ return array(
                 'options' => array(
                     'route'    => '/search',
                     'defaults' => array(
-                        'controller' => 'SearchableModules\Controller\Search',
+                        'controller' => 'SearchModules\Controller\Search',
                         'action'     => 'index',
                     ),
                 ),
@@ -137,8 +143,8 @@ return array(
 
     'controllers'=>array(
         'invokables'=>array(
-            'SearchableModules\Controller\Search'=>'SearchableModules\Controller\SearchController',
-            'SearchableModules\Controller\Admin' => 'SearchableModules\Controller\AdminController'
+            'SearchModules\Controller\Search'=>'SearchModules\Controller\SearchController',
+            'SearchModules\Controller\Admin' => 'SearchModules\Controller\AdminController'
         )
     ),
 

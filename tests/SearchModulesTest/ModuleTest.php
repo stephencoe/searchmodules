@@ -1,12 +1,12 @@
 <?php
 
-namespace SearchableModulesTest;
+namespace SearchModulesTest;
 
 use PHPUnit_Framework_TestCase;
-use SearchableModules\Module;
+use SearchModules\Module;
 
 /**
- * @covers SearchableModules\Module
+ * @covers SearchModules\Module
  */
 class ModuleTest extends PHPUnit_Framework_TestCase
 {

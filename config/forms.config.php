@@ -1,16 +1,14 @@
 <?php
 
 use AdminInterface\Form\StandardForm as SearchForm;
-use Search\Form\Fieldset\Search as SearchFieldset;
+use SearchModules\Form\Fieldset\Search as SearchFieldset;
 
 return array(
     'factories' => array(
-        'Search\Form\Search' => function ($sm) {
+        'SearchModules\Form\Search' => function ($sm) {
             $form = new SearchForm('Search');
 
-            $mediaFieldset = $sm->get('Media\Form\Fieldset\Media');
-            $mediaFieldset->setUseAsBaseFieldset(true);
-            $form->add($mediaFieldset);
+            $form->add($sm->get('Search\Form\Fieldset\Search'));
 
             return $form;
         },

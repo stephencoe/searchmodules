@@ -1,9 +1,9 @@
 {
-    "name" : "lavaweb/SearchableModules",
+    "name" : "lavaweb/SearchModules",
     "description" : "Module description",
     "type" : "module",
     "license" : "BSD-3-Clause",
-    "homepage" : "https://github.com/lavaweb/SearchableModules",
+    "homepage" : "https://github.com/lavaweb/SearchModules",
     "keywords" : [
         "zf2",
         "module"
@@ -18,7 +18,7 @@
     },
     "autoload" : {
         "psr-0" : {
-            "SearchableModules\\" : "src/"
+            "SearchModules\\" : "src/"
         }
     }
 }

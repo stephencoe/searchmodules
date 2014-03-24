@@ -12,7 +12,6 @@ use Zend\Mvc\Controller\AbstractActionController,
 
 class AdminController extends AbstractActionController implements ServiceLocatorAwareInterface
 {
-    const ADMIN_ROUTE = 'zfcadmin/searchresults';
 
     /**
      * @var ServiceLocatorInterface
@@ -27,22 +26,6 @@ class AdminController extends AbstractActionController implements ServiceLocator
 
     protected $searchService;
 
-    /**
-     *
-     * @var Doctrine\ORM\EntityManager
-     * 
-     **/
-
-    protected $entityManager;
-
-    /**
-     *
-     * @var Search\Entity\SearchTerm
-     * 
-     **/
-
-    protected $repository;
-
      /**
      *
      * @var FormElementManager
@@ -53,8 +36,10 @@ class AdminController extends AbstractActionController implements ServiceLocator
 
     public function indexAction()
     {
+        $results = $this->getSearchService()->getRepository()->findAll();
+        
         return new ViewModel(array(
-            'results' => $this->getRepository()->findAll()
+            'results'   =>  $results
         ));
     }
 
@@ -97,7 +82,7 @@ class AdminController extends AbstractActionController implements ServiceLocator
     public function getSearchService()
     {
         if(!$this->searchService){
-            $this->setSearchService( $this->getServiceLocator()->get('Search\Service\Search') );
+            $this->setSearchService( $this->getServiceLocator()->get('SearchModules\Service\Search') );
         }
         return $this->searchService;
     }

@@ -1,4 +1,4 @@
-# SearchableModules
+# SearchModules
 _Short description_
 
 Installation

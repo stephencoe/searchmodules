@@ -11,8 +11,8 @@
         backupGlobals="false"
         syntaxCheck="true"
         >
-    <testsuite name="SearchableModules tests">
-        <directory>./tests/SearchableModulesTest</directory>
+    <testsuite name="SearchModules tests">
+        <directory>./tests/SearchModulesTest</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">

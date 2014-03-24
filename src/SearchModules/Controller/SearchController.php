@@ -11,13 +11,6 @@ use Zend\Mvc\Controller\AbstractActionController,
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter,
     Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 
-use ZendSearch\Lucene\Lucene,
-    ZendSearch\Lucene\Document,
-    ZendSearch\Lucene\Document\Field,
-    ZendSearch\Lucene\Index\Term,
-    ZendSearch\Lucene\Search\QueryParser,
-    ZendSearch\Lucene\Search\Query\Term as QueryTerm,
-    ZendSearch\Lucene\Search\Query\Boolean;
 
 class SearchController extends AbstractActionController implements ServiceLocatorAwareInterface
 {
@@ -42,87 +35,56 @@ class SearchController extends AbstractActionController implements ServiceLocato
      **/
 
     protected $formManager;
-
     public function indexAction()
     {
-        //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.searching.html#
-        //http://stackoverflow.com/questions/7805996/zend-search-lucene-matches
-        //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.index-creation.html
-        $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
-        $index = Lucene::open($where);
-        // echo $index->count();
-        // echo $index->numDocs();
-        // 
+        //PRG?
+        $form       =   $this->getFormManager()->get('SearchModules\Form\Search');
+        $request    =   $this->getRequest();
+        $term       =   (string) $this->params()->fromQuery('t');
+        $results    =   array();
+        $entity     =   $this->getSearchService()->newSearchEntity();
+
+        $entity->setTerm($term);
+
+        $form->bind( $entity );
         
-        // $index = Lucene::create( $where  );
+        if ($request->isPost()) {
 
-        // $doc = new Document();
+            $form->setData($request->getPost());
 
-        // // Store document URL to identify it in the search results
-        // $doc->addField(Field::Text('url', '/news/some-other-post'));
-
-        // // Index document contents
-        // $doc->addField(Field::UnStored('contents', '<p>some content</p>'));
-
-        // // Add document to the index
-        // $index->addDocument($doc);
-        // // exit;
-
-        // $index = Lucene::open($where);
-        $query = QueryParser::parse('moar');
-
-        // $pathTerm  = new Term(
-        //                      $where, 'path'
-        //                  );
-        // $pathQuery = new QueryTerm($pathTerm);
-
-        // $query = new Boolean();
-        // $query->addSubquery($userQuery, true /* required */);
-        // $query->addSubquery($pathQuery, true /* required */);
-
-        $hits = $index->find($query);
-        // $hits = $index->find('content');
-        var_dump($hits);exit;
-        foreach ($hits as $hit) {
-            // var_dump($hit->getDocument());exit;
-            // return Zend\Search\Lucene\Document object for this hit
-            $document = $hit->getDocument();
-
-            // // return a Zend\Search\Lucene\Field object
-            // // from the Zend\Search\Lucene\Document
-            var_dump($document);continue;exit;
-
-            // // return the string value of the Zend\Search\Lucene\Field object
-            // echo $document->getFieldValue('url');
-
-            // // same as getFieldValue()
-            echo $document->url . '<br>';
+            if ($form->isValid()) {
+                $results = $this->getSearchService()->searchIndex($term);
+            } else {
+                $this->fm('Invalid search','error');
+            }
         }
 
-        exit;
+        $results = $this->getSearchService()->searchIndex($entity);
 
-        $page = $this->params('page');
-	    $max = 20;
-	    
-	    $adapter = new DoctrineAdapter(new ORMPaginator($this->getSearchService()->getPaginator(($page - 1) * 20, $max)));
-	     // $adapter = new DoctrineAdapter(new ORMPaginator($repository->createQueryBuilder('blog')));
-        $paginator = new Paginator($adapter);
+        // $page = $this->params('page');
+        // $max = 20;
+        
+        // $adapter = new DoctrineAdapter(new ORMPaginator($this->getSearchService()->getPaginator(($page - 1) * 20, $max)));
+        //  // $adapter = new DoctrineAdapter(new ORMPaginator($repository->createQueryBuilder('blog')));
+        // $paginator = new Paginator($adapter);
 
-        // set the current page to what has been passed in query string, or to 1 if none set
-        $paginator->setCurrentPageNumber((int)$this->params()->fromQuery('page', 1));
-        // set the number of items per page to 10
-        $paginator->setItemCountPerPage(10);
-	    // $results = $this->repository->getPaginator(($page - 1) * 20, $max);
+        // // set the current page to what has been passed in query string, or to 1 if none set
+        // $paginator->setCurrentPageNumber((int)$this->params()->fromQuery('page', 1));
+        // // set the number of items per page to 10
+        // $paginator->setItemCountPerPage(10);
+        // $results = $this->repository->getPaginator(($page - 1) * 20, $max);
 
-	    // $adapter = new Adapter($results);
-	    // $paginator = new DoctrineAdapter( new Adapter($results) );
-	    // $paginator->setCurrentPageNumber($page);
-	    // $paginator->setItemCountPerPage($max);
-
-	    return new ViewModel(array(
-	        'results'  =>  $paginator
-	    ));
+        // $adapter = new Adapter($results);
+        // $paginator = new DoctrineAdapter( new Adapter($results) );
+        // $paginator->setCurrentPageNumber($page);
+        // $paginator->setItemCountPerPage($max);
+        
+        return new ViewModel(array(
+            'results'   =>  $results,
+            'term'      =>  $term
+        ));
     }
+    
 
     /**
     *

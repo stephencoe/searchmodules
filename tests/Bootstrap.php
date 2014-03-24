@@ -9,4 +9,4 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 }
 
 /** @var $loader \Composer\Autoload\ClassLoader */
-$loader->add('SearchableModulesTest\\', __DIR__);
+$loader->add('SearchModulesTest\\', __DIR__);

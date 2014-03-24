@@ -1,0 +1,21 @@
+<div class="container">
+	<div class="row">
+		<h1>Search Results for "<?php echo $term; ?>" </h1>
+		<br>
+		<small><?php echo count($results); ?> Results</small>
+		
+		<?php foreach ($results as $hit) : ?>
+			<?php /** @var Zend\Search\Lucene\Document **/ ?>
+			<?php $document = $hit->getDocument(); ?>
+			<div class="col-sm-12">
+				<h3>
+					<a href="<?php echo $document->getFieldValue('url');?>">
+						<?php //echo $document->getFieldValue('title');?>
+						<?php echo $document->getFieldValue('url');?>
+					</a>
+				</h3>
+				<p><?php //echo $document->getFieldValue('snippet');?></p>
+			</div>
+		<?php endforeach; ?>
+	</div>
+</div>
