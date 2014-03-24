@@ -5,20 +5,19 @@ namespace SearchModules\Controller;
 use Zend\Mvc\Controller\AbstractActionController,
     Zend\View\Model\ViewModel,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\Paginator\Paginator;
 
-use Zend\Paginator\Paginator,
-	DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter,
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter,
     Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
-
 
 use ZendSearch\Lucene\Lucene,
     ZendSearch\Lucene\Document,
-    ZendSearch\Lucene\Document\Field;
-use ZendSearch\Lucene\Search\QueryParser;
-use ZendSearch\Lucene\Index\Term;
-use ZendSearch\Lucene\Search\Query\Term as QueryTerm;
-use ZendSearch\Lucene\Search\Query\Boolean;
+    ZendSearch\Lucene\Document\Field,
+    ZendSearch\Lucene\Index\Term,
+    ZendSearch\Lucene\Search\QueryParser,
+    ZendSearch\Lucene\Search\Query\Term as QueryTerm,
+    ZendSearch\Lucene\Search\Query\Boolean;
 
 class SearchController extends AbstractActionController implements ServiceLocatorAwareInterface
 {

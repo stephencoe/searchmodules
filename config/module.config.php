@@ -72,9 +72,8 @@ return array(
                 ),
             ),
             'BjyAuthorize\Guard\Route' => array(
-                array('route' => 'zfcadmin/search/add', 'roles' => array('editor')),
-                array('route' => 'zfcadmin/search/edit', 'roles' => array('editor')),
-                array('route' => 'zfcadmin/search', 'roles' => array('editor')),
+
+                array('route' => 'zfcadmin/searchresults', 'roles' => array('editor')),
 
                 array('route' => 'search', 'roles' => array('guest')),
 
@@ -85,23 +84,13 @@ return array(
 
     'navigation' => array(
         'admin' => array(
-            // 'Staff'=>array(
-            //     'icon'=>'entypo-doc-text',
-            //     'label' => 'Staff',
+            // 'Search'=>array(
+            //     'icon'=>'entypo-search',
+            //     'label' => 'Search Results',
             //     'resource' => 'SearchableModules\Controller\Admin',
             //     'privilege'=>'list',
-            //     'order'=>3,
-            //     'uri'=>'#',
-            //     'pages'=>array(
-            //         array(
-            //             'label' => 'Team',
-            //             'route' => 'zfcadmin/search',
-            //         ),
-            //         array(
-            //             'label' => 'Categories',
-            //             'route' => 'zfcadmin/search/categories',
-            //         ),
-            //     )
+            //     'order'=>10,
+            //     'route' => 'zfcadmin/searchresults',
             // ),
         ),
     ),
@@ -110,7 +99,7 @@ return array(
         'routes' => array(
             'zfcadmin' => array(
                 'child_routes' => array(
-                    'search' => array(
+                    'searchresults' => array(
                         'type'    => 'Literal',
                         'options' => array(
                             'route'    => '/search',
