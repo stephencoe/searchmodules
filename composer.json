@@ -1,9 +1,9 @@
 {
-    "name" : "lavaweb/SearchModules",
+    "name" : "lavaweb/searchmodules",
     "description" : "Module description",
     "type" : "module",
     "license" : "BSD-3-Clause",
-    "homepage" : "https://github.com/lavaweb/SearchModules",
+    "homepage" : "https://bitbucket.org/lavaweb/searchmodules",
     "keywords" : [
         "zf2",
         "module"
