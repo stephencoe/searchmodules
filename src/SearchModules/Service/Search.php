@@ -58,34 +58,44 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
         return new $this->searchEntity;
     }
 
-    public function searchIndex($entity)
+    public function searchIndex( $entity )
     {
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.searching.html#
         //http://stackoverflow.com/questions/7805996/zend-search-lucene-matches
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.index-creation.html
         $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
-        $index = Lucene::open($where);
+        // $index = Lucene::open($where);
         // echo $index->count();
         // echo $index->numDocs();
         // 
         
-        // $index = Lucene::create( $where  );
+        $index = Lucene::create( $where  );
 
-        // $doc = new Document();
+        $doc = new Document();
 
-        // // Store document URL to identify it in the search results
-        // $doc->addField(Field::Text('url', '/news/some-other-post'));
+        // Store document URL to identify it in the search results
+        $doc->addField(Field::Text('url', '/news/some-other-post'));
+        $doc->addField(Field::Text('title', 'An Example search result'));
+        $doc->addField(Field::Text('description', 'In publishing and graphic design, lorem ipsum is a placeholder text commonly used to demonstrate the graphic elements of a document or visual presentation.'));
 
-        // // Index document contents
-        // $doc->addField(Field::UnStored('contents', '<p>some content</p>'));
+        // Index document contents
+        $doc->addField(Field::UnStored('contents', '<p>some content</p>'));
+        $index->addDocument($doc);
+        $doc = new Document();
+        $doc->addField(Field::Text('url', '/news/1-post'));
+        $doc->addField(Field::Text('title', 'Another Example search result'));
+        $doc->addField(Field::Text('description', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.'));
 
-        // // Add document to the index
-        // $index->addDocument($doc);
+        // Index document contents
+        $doc->addField(Field::UnStored('contents', '<p>some content, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. </p>'));
+
+        // Add document to the index
+        $index->addDocument($doc);
 
         $query = QueryParser::parse( $entity->getTerm() );
 
         $hits = $index->find($query);
-        $entity->setCount( count($hits) );
+        $entity->setCount( count( $hits ) );
         // $this->create($entity);
 
         return $hits;

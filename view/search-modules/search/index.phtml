@@ -10,11 +10,12 @@
 			<div class="col-sm-12">
 				<h3>
 					<a href="<?php echo $document->getFieldValue('url');?>">
-						<?php //echo $document->getFieldValue('title');?>
-						<?php echo $document->getFieldValue('url');?>
+						<?php echo $document->getFieldValue('title');?>
 					</a>
 				</h3>
-				<p><?php //echo $document->getFieldValue('snippet');?></p>
+
+				<p><?php echo $document->getFieldValue('description');?></p>
+				<a href="<?php echo $document->getFieldValue('url');?>"><?php echo $document->getFieldValue('url');?></a>
 			</div>
 		<?php endforeach; ?>
 	</div>
