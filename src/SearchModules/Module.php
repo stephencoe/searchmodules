@@ -1,16 +1,27 @@
 <?php
 namespace SearchModules;
 
-use Zend\Loader\AutoloaderFactory;
-use Zend\Loader\StandardAutoloader;
-use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\Loader\AutoloaderFactory,
+    Zend\Loader\StandardAutoloader,
+    Zend\ModuleManager\Feature\AutoloaderProviderInterface,
+    Zend\ModuleManager\Feature\ConfigProviderInterface,
+    Zend\Mvc\MvcEvent;
 
 /**
  * SearchModules Module definition.
  */
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface
 {
+
+    public function onBootstrap(MvcEvent $event)
+    {
+        $eventManager   = $event->getApplication()->getEventManager();
+        $sharedManager  = $eventManager->getSharedManager();
+        $serviceManager = $event->getApplication()->getServiceManager();
+        $search = $serviceManager->get('SearchModules\Service\Search');
+        $search->buildIndex();
+    }
+
 
     /**
      * {@inheritDoc}

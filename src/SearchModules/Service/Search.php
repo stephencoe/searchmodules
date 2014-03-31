@@ -64,41 +64,46 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
         //http://stackoverflow.com/questions/7805996/zend-search-lucene-matches
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.index-creation.html
         $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
-        // $index = Lucene::open($where);
-        // echo $index->count();
-        // echo $index->numDocs();
-        // 
-        
-        $index = Lucene::create( $where  );
-
-        $doc = new Document();
-
-        // Store document URL to identify it in the search results
-        $doc->addField(Field::Text('url', '/news/some-other-post'));
-        $doc->addField(Field::Text('title', 'An Example search result'));
-        $doc->addField(Field::Text('description', 'In publishing and graphic design, lorem ipsum is a placeholder text commonly used to demonstrate the graphic elements of a document or visual presentation.'));
-
-        // Index document contents
-        $doc->addField(Field::UnStored('contents', '<p>some content</p>'));
-        $index->addDocument($doc);
-        $doc = new Document();
-        $doc->addField(Field::Text('url', '/news/1-post'));
-        $doc->addField(Field::Text('title', 'Another Example search result'));
-        $doc->addField(Field::Text('description', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.'));
-
-        // Index document contents
-        $doc->addField(Field::UnStored('contents', '<p>some content, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. </p>'));
-
-        // Add document to the index
-        $index->addDocument($doc);
+        $index = Lucene::open($where);
 
         $query = QueryParser::parse( $entity->getTerm() );
 
         $hits = $index->find($query);
         $entity->setCount( count( $hits ) );
-        // $this->create($entity);
+        
+        //save the search for reference
+        $this->create($entity);
 
         return $hits;
+    }
+
+    public function buildIndex(){return true;
+        $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
+        $index = Lucene::create( $where  );
+
+        if($this->getOptions()->getModules()){
+            foreach($this->getOptions()->getModules() as $module){
+                $indexes = $this->getEntityManager()->getRepository( $module['name'] )->findAll();
+                foreach($indexes as $dbindex){
+                    $doc = new Document();
+
+                    // Store document URL to identify it in the search results
+                    $doc->addField(Field::Text('url',  $module['route'] ));
+                    // exit;
+                    $doc->addField(Field::Text('url_field', 'slug' ));
+                    $doc->addField(Field::Text('url_params', $dbindex->getSlug() ));
+
+                    $doc->addField(Field::Text('title', $dbindex->getTitle() ));
+                    $doc->addField(Field::Text('description', $dbindex->getBody() ));
+
+                    // Index document contents
+                    $doc->addField(Field::UnStored('contents', $dbindex->getBody()));
+                    $index->addDocument($doc);
+
+                }
+            }
+        }
+        var_dump($this->getOptions()->getModules());exit;
     }
 
     /**

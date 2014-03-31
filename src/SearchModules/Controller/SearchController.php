@@ -6,10 +6,8 @@ use Zend\Mvc\Controller\AbstractActionController,
     Zend\View\Model\ViewModel,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Paginator\Paginator;
-
-use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter,
-    Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
+    Zend\Paginator\Paginator,
+    Zend\Paginator\Adapter\ArrayAdapter;
 
 
 class SearchController extends AbstractActionController implements ServiceLocatorAwareInterface
@@ -41,7 +39,6 @@ class SearchController extends AbstractActionController implements ServiceLocato
         $form       =   $this->getFormManager()->get('SearchModules\Form\Search');
         $request    =   $this->getRequest();
         $term       =   (string) $this->params()->fromQuery('t');
-        $results    =   array();
         $entity     =   $this->getSearchService()->newSearchEntity();
 
         $entity->setTerm($term);
@@ -60,28 +57,19 @@ class SearchController extends AbstractActionController implements ServiceLocato
         }
 
         $results = $this->getSearchService()->searchIndex($entity);
-
-        // $page = $this->params('page');
-        // $max = 20;
         
-        // $adapter = new DoctrineAdapter(new ORMPaginator($this->getSearchService()->getPaginator(($page - 1) * 20, $max)));
-        //  // $adapter = new DoctrineAdapter(new ORMPaginator($repository->createQueryBuilder('blog')));
-        // $paginator = new Paginator($adapter);
-
+        $page = (int)$this->params()->fromQuery('page', 1);
+        // $max = 20;
+        $paginator = new Paginator(new ArrayAdapter( $results ));
         // // set the current page to what has been passed in query string, or to 1 if none set
-        // $paginator->setCurrentPageNumber((int)$this->params()->fromQuery('page', 1));
+        $paginator->setCurrentPageNumber((int)$this->params()->fromQuery('page', 1));
         // // set the number of items per page to 10
-        // $paginator->setItemCountPerPage(10);
-        // $results = $this->repository->getPaginator(($page - 1) * 20, $max);
-
-        // $adapter = new Adapter($results);
-        // $paginator = new DoctrineAdapter( new Adapter($results) );
-        // $paginator->setCurrentPageNumber($page);
-        // $paginator->setItemCountPerPage($max);
+        $paginator->setItemCountPerPage(10);
         
         return new ViewModel(array(
-            'results'   =>  $results,
-            'term'      =>  $term
+            'results'   =>  $paginator,
+            'term'      =>  $term,
+            'page'      =>  $page,
         ));
     }
     
@@ -124,7 +112,7 @@ class SearchController extends AbstractActionController implements ServiceLocato
     public function getSearchService()
     {
         if(!$this->searchService){
-            $this->setSearchService( $this->getServiceLocator()->get('SearchModules\Service\Search') );
+            $this->setSearchService( $this->getServiceLocator()->get('SearchModules\Service\Search') ); 
         }
         return $this->searchService;
     }

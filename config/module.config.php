@@ -6,11 +6,14 @@ return array(
 	'lava_searchable'=>array(
 		'modules'=>array(
 			array(
-				'name'=>'DynamicPages\Entity\Page',
+				'name'=>'DynamicPages\Entity\DynamicPage',
 				'fields'=>array(
 					'title',
 					'body',
+                    'slug'
 				),
+                'description'=>'body',
+                'search'=>'body',
 				'route'=>'cms-page'
 			),
 			array(
@@ -18,30 +21,28 @@ return array(
 				'fields'=>array(
 					'title',
 					'body',
+                    'slug'
 				),
-				'route'=>array(
-					'name'=>'view',
-					'params'=>array(
-						'slug'
-					),
-					'format'=>'slug'
-				)
+                'description'=>'excerpt',
+                'search'=>'body',
+                'route'=>'news/view'
 			),
-			array(
-				'name'=>'Events\Entity\Event',
-				'fields'=>array(
-					'title',
-					'body',
-				),
-				'route'=>array(
-					'name'=>'view',
-					'params'=>array(
-						'slug',
-						'id'
-					),
-					'format'=>'id-slug'
-				)
-			)
+			// array(
+			// 	'name'=>'Events\Entity\Event',
+			// 	'fields'=>array(
+			// 		'title',
+			// 		'body',
+			// 	),
+   //              'search'=>'body',
+			// 	'route'=>array(
+			// 		'name'=>'view',
+			// 		'params'=>array(
+			// 			'slug',
+			// 			'id'
+			// 		),
+			// 		'format'=>'id-slug'
+			// 	)
+			// )
 		),
 	),
     'bjyauthorize' => array(
@@ -122,14 +123,15 @@ return array(
                 ),
             ),
             'search' => array(
-                'type'    => 'Literal',
+                'type'    => 'Segment',
                 'options' => array(
-                    'route'    => '/search',
+                    'route'    => '/search[?[t=:term]&[page=:page]]',
                     'defaults' => array(
                         'controller' => 'SearchModules\Controller\Search',
                         'action'     => 'index',
                     ),
                 ),
+
             ),
         ),
     ),
