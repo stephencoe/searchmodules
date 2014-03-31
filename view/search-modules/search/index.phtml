@@ -1,39 +1,42 @@
-<div class="container">
+<?php 
+	$this->navigation('MainNavigation')
+			->getContainer()
+			->findBy('label','News & Events')
+			->setActive(true);
+?>
 
-	<div class="row">
-		<h1>Search Results for "<?php echo $term; ?>" </h1>
-		<br>
-		<small><?php echo $this->results->count(); ?> Results</small>
-		
-		<?php foreach ($results as $hit) : ?>
-			<?php /** @var Zend\Search\Lucene\Document **/ ?>
-			<?php $document = $hit->getDocument(); ?>
-			<div class="col-sm-12">
-				<h3>
-					<a href="<?php echo $this->url( $document->getFieldValue('url') , array($document->getFieldValue('url_field') => $document->getFieldValue('url_params')) );?>">
-						<?php echo $document->getFieldValue('title');?>
-					</a>
-				</h3>
+<?php $this->layout( 'layout/one-column' ); ?>
 
-				<p><?php echo $this->truncate( $document->getFieldValue('description'), 200, true, false );?></p>
-				<a href="<?php echo $this->url( $document->getFieldValue('url') , array($document->getFieldValue('url_field') => $document->getFieldValue('url_params')) );?>">View Page</a>
-				<hr >
-			</div>
+<h1>Search Results for "<?php echo $term; ?>" </h1>
 
-		<?php endforeach; ?>
+<small><?php echo $this->results->count(); ?> Results</small>
+
+<?php foreach ($results as $hit) : ?>
+	<?php /** @var Zend\Search\Lucene\Document **/ ?>
+	<?php $document = $hit->getDocument(); ?>
+	<div class="col-sm-12">
+		<h3>
+			<a href="<?php echo $this->url( $document->getFieldValue('url') , array($document->getFieldValue('url_field') => $document->getFieldValue('url_params')) );?>">
+				<?php echo $document->getFieldValue('title');?>
+			</a>
+		</h3>
+
+		<p><?php echo $this->truncate( $document->getFieldValue('description'), 200, true, false );?></p>
+		<a href="<?php echo $this->url( $document->getFieldValue('url') , array($document->getFieldValue('url_field') => $document->getFieldValue('url_params')) );?>">View Page</a>
+		<hr >
 	</div>
-	<div class="row">
-		<div class="col-sm-12">
-			<?php 
-					echo $this->paginationControl(
-						$this->results,
-						'Sliding',
-						'search-modules/html/paginator.phtml', 
-						array(
-							'route'	=>	'search',
-							'term'	=>	$this->term
-						)); 
-			?>
-		</div>
-	</div>
+
+<?php endforeach; ?>
+
+<div class="col-sm-12">
+	<?php 
+			echo $this->paginationControl(
+				$this->results,
+				'Sliding',
+				'search-modules/html/paginator.phtml', 
+				array(
+					'route'	=>	'search',
+					'term'	=>	$this->term
+				)); 
+	?>
 </div>
