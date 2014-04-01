@@ -19,7 +19,19 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
         $sharedManager  = $eventManager->getSharedManager();
         $serviceManager = $event->getApplication()->getServiceManager();
         $search = $serviceManager->get('SearchModules\Service\Search');
-        $search->buildIndex();
+        // $search->buildIndex();
+        foreach ($search->getOptions()->getModules() as $module) {
+            // var_dump($module['name']);exit;
+            $sharedManager->attach($module['name'],'create.post', function($e)  use ($search) {
+                // var_dump($e);exit;
+               // $search->indexData($e);
+            }, 100);
+            
+            $sharedManager->attach($module['name'],'edit.post', function($e)  use ($search) {
+                // var_dump($e);exit;
+                // $search->indexData($e);
+            }, 100);
+        }
     }
 
 

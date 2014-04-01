@@ -77,7 +77,12 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
         return $hits;
     }
 
-    public function buildIndex(){return true;
+
+    /**
+     * Build a full index of all modules flagged for indexing.
+     * should be called from CLI or CRON
+     */
+    public function buildIndex(){
         $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
         $index = Lucene::create( $where  );
 
@@ -89,7 +94,7 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
 
                     // Store document URL to identify it in the search results
                     $doc->addField(Field::Text('url',  $module['route'] ));
-                    // exit;
+                    
                     $doc->addField(Field::Text('url_field', 'slug' ));
                     $doc->addField(Field::Text('url_params', $dbindex->getSlug() ));
 
@@ -103,7 +108,6 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
                 }
             }
         }
-        var_dump($this->getOptions()->getModules());exit;
     }
 
     /**
