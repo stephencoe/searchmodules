@@ -9,15 +9,9 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
     ZfcBase\EventManager\EventProvider;
 
 use ZendSearch\Lucene\Lucene,
-    ZendSearch\Lucene\Document,
-    ZendSearch\Lucene\Document\Field,
-    ZendSearch\Lucene\Index\Term,
-    ZendSearch\Lucene\Search\QueryParser,
-    ZendSearch\Lucene\Search\Query\Term as QueryTerm,
-    ZendSearch\Lucene\Search\Query\Boolean;
+    ZendSearch\Lucene\Search\QueryParser;
 
 use SearchModules\Entity\SearchTerm as SearchTerm;
-
 
 class Search extends EventProvider implements ServiceLocatorAwareInterface
 {
@@ -57,14 +51,18 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
     public function newSearchEntity(){
         return new $this->searchEntity;
     }
-
+    
+    /**
+     * Search the index for a given term
+     * @param  [type] $entity Pre built entity from the search form
+     * @return Array         Results
+     */
     public function searchIndex( $entity )
     {
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.searching.html#
         //http://stackoverflow.com/questions/7805996/zend-search-lucene-matches
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.index-creation.html
-        $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
-        $index = Lucene::open($where);
+        $index = Lucene::open( $this->getOptions()->getIndexDir() );
 
         $query = QueryParser::parse( $entity->getTerm() );
 
@@ -75,39 +73,6 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
         $this->create($entity);
 
         return $hits;
-    }
-
-
-    /**
-     * Build a full index of all modules flagged for indexing.
-     * should be called from CLI or CRON
-     */
-    public function buildIndex(){
-        $where = dirname(dirname(__FILE__)) . '/../../../../../data/search_index';
-        $index = Lucene::create( $where  );
-
-        if($this->getOptions()->getModules()){
-            foreach($this->getOptions()->getModules() as $module){
-                $indexes = $this->getEntityManager()->getRepository( $module['name'] )->findAll();
-                foreach($indexes as $dbindex){
-                    $doc = new Document();
-
-                    // Store document URL to identify it in the search results
-                    $doc->addField(Field::Text('url',  $module['route'] ));
-                    
-                    $doc->addField(Field::Text('url_field', 'slug' ));
-                    $doc->addField(Field::Text('url_params', $dbindex->getSlug() ));
-
-                    $doc->addField(Field::Text('title', $dbindex->getTitle() ));
-                    $doc->addField(Field::Text('description', $dbindex->getBody() ));
-
-                    // Index document contents
-                    $doc->addField(Field::UnStored('contents', $dbindex->getBody()));
-                    $index->addDocument($doc);
-
-                }
-            }
-        }
     }
 
     /**
@@ -195,7 +160,7 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
      */
     public function getOptions()
     {;
-        if (!$this->options){//} instanceof ) {
+        if (!$this->options){
             $this->setOptions($this->getServiceLocator()->get('search_options'));
         }
         return $this->options;

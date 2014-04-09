@@ -9,6 +9,7 @@ return array(
         }
     ),
 	'invokables'=>array(
-        'SearchModules\Service\Search' => 'SearchModules\Service\Search'
+        'SearchModules\Service\Search'	=>	'SearchModules\Service\Search',
+        'SearchModules\Service\Indexer'	=>	'SearchModules\Service\Indexer',
     )
 );

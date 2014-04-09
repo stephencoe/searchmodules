@@ -43,6 +43,11 @@ class AdminController extends AbstractActionController implements ServiceLocator
         ));
     }
 
+    public function buildIndexAction(){
+        $this->getServiceLocator()->get('SearchModules\Service\Indexer')->build();
+        $this->fm('Data re-indexed', 'success');
+        return $this->redirect()->toRoute( '/admin' );
+    }
     /**
     *
     * Getters & setters
@@ -111,8 +116,6 @@ class AdminController extends AbstractActionController implements ServiceLocator
         if(!$this->formManager){
             $this->setFormManager( $this->getServiceLocator()->get('FormElementManager') );
         }
-        return $this->formManager;
-
         return $this->formManager;
     }
 

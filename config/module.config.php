@@ -70,7 +70,7 @@ return array(
                 array(
                     'controller' => 'SearchModules\Controller\Admin',
                     'roles' => array('editor'),
-                    'action'=>array('index', 'add', 'edit'),
+                    'action'=>array('index', 'add', 'edit', 'build-index'),
                 ),
 
                 array(
@@ -81,6 +81,7 @@ return array(
             'BjyAuthorize\Guard\Route' => array(
 
                 array('route' => 'zfcadmin/searchresults', 'roles' => array('editor')),
+                array('route' => 'zfcadmin/searchresults/build-index', 'roles' => array('editor')),
 
                 array('route' => 'search', 'roles' => array('guest')),
 
@@ -110,16 +111,26 @@ return array(
                         'type'    => 'Literal',
                         'options' => array(
                             'route'    => '/search',
-                            'constraints' => array(
-                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'id'     => '[0-9]+',
-                            ),
                             'defaults' => array(
                                 'controller' => 'SearchModules\Controller\Admin',
                                 'action'     => 'index',
                             ),
                         ),
+                        'may_terminate' => true,
+                        'child_routes' => array(
+                            'build-index' => array(
+                                'type'    => 'Literal',
+                                'options' => array(
+                                    'route'    => '/build-index',
+                                    'defaults' => array(
+                                        'controller' => 'SearchModules\Controller\Admin',
+                                        'action'     => 'buildIndex',
+                                    ),
+                                ),
+                            )
+                        )
                     ),
+                   
                 ),
             ),
             'search' => array(

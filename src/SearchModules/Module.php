@@ -18,8 +18,9 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
         $eventManager   = $event->getApplication()->getEventManager();
         $sharedManager  = $eventManager->getSharedManager();
         $serviceManager = $event->getApplication()->getServiceManager();
+        
         $search = $serviceManager->get('SearchModules\Service\Search');
-        // $search->buildIndex();
+        
         foreach ($search->getOptions()->getModules() as $module) {
             // var_dump($module['name']);exit;
             $sharedManager->attach($module['name'],'create.post', function($e)  use ($search) {
@@ -32,8 +33,18 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
                 // $search->indexData($e);
             }, 100);
         }
+
+        //check the build index cron
+        $this->registerCron($event);
     }
 
+    public function registerCron(MvcEvent $e)
+    {
+        $e->getApplication()
+            ->getServiceManager()
+            ->get('SearchModules\Service\Indexer')
+            ->registerCron();
+    }
 
     /**
      * {@inheritDoc}
