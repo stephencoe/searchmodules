@@ -62,7 +62,11 @@ class Search extends EventProvider implements ServiceLocatorAwareInterface
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.searching.html#
         //http://stackoverflow.com/questions/7805996/zend-search-lucene-matches
         //http://framework.zend.com/manual/2.0/en/modules/zendsearch.lucene.index-creation.html
-        $index = Lucene::open( $this->getOptions()->getIndexDir() );
+        try{
+            $index = Lucene::open( $this->getOptions()->getIndexDir() );
+        } catch(Exception $e){
+            return array();
+        }        
 
         $query = QueryParser::parse( $entity->getTerm() );
 
