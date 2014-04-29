@@ -1,20 +1,20 @@
 <?php $this->layout( 'layout/two-column-left' ); ?>
 
 <h1>Search Results for "<?php echo $term; ?>" </h1>
-<small><?php echo $this->results->count(); ?> Results</small>
+<small><?php echo $this->results->getTotalItemCount(); ?> Results</small>
 <ol>
 	<?php foreach ($results as $hit) : ?>
 		<?php /** @var Zend\Search\Lucene\Document **/ ?>
 		<?php $document = $hit->getDocument(); ?>
 		<li>
 			<h2>
-				<a href="<?php echo $this->url( $document->getFieldValue('url') , array($document->getFieldValue('url_field') => $document->getFieldValue('url_params')) );?>">
+				<a href="<?php echo $this->url( $document->getFieldValue('route') , array('slug' => $document->getFieldValue('slug')) );?>">
 					<?php echo $document->getFieldValue('title');?>
 				</a>
 			</h2>
 
 			<p><?php echo strip_tags( $this->truncate( $document->getFieldValue('description'), 200, true, false ) );?></p>
-			<a class="more-link" href="<?php echo $this->url( $document->getFieldValue('url') , array($document->getFieldValue('url_field') => $document->getFieldValue('url_params')) );?>">Read More</a>
+			<a class="more-link" href="<?php echo $this->url( $document->getFieldValue('route') , array('slug' => $document->getFieldValue('slug')) );?>">Read More</a>
 			<hr>
 		</li>
 	<?php endforeach; ?>

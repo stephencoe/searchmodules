@@ -2,47 +2,26 @@
 namespace SearchModules;
 
 return array(
-	//searchable modules are registered in this :)
+	//searchable modules are registered here
+    //indexDir must be absolute, lucene throws an error if the path is "./data/search_index"
 	'lava_searchable'=>array(
+        'indexDir'=>'/hsphere/local/home/lavaunix/lowtherhall.vic.edu.au/data/search_index',
 		'modules'=>array(
 			array(
 				'name'=>'DynamicPages\Entity\DynamicPage',
-				'fields'=>array(
-					'title',
-					'body',
-                    'slug'
-				),
-                'description'=>'body',
-                'search'=>'body',
+                'slug_field'=>'uri',
 				'route'=>'cms-page'
 			),
 			array(
-				'name'=>'Blog\Entity\Post',
-				'fields'=>array(
-					'title',
-					'body',
-                    'slug'
-				),
-                'description'=>'excerpt',
-                'search'=>'body',
+                'name'=>'Blog\Entity\Post',
+                'slug_field'=>'slug',
                 'route'=>'news/view'
-			),
-			// array(
-			// 	'name'=>'Events\Entity\Event',
-			// 	'fields'=>array(
-			// 		'title',
-			// 		'body',
-			// 	),
-   //              'search'=>'body',
-			// 	'route'=>array(
-			// 		'name'=>'view',
-			// 		'params'=>array(
-			// 			'slug',
-			// 			'id'
-			// 		),
-			// 		'format'=>'id-slug'
-			// 	)
-			// )
+            ),
+            array(
+                'name'=>'Events\Entity\Event',
+                'slug_field'=>'slug',
+                'route'=>'news/view'
+            ),
 		),
 	),
     'bjyauthorize' => array(

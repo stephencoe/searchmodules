@@ -36,7 +36,7 @@ class SearchController extends AbstractActionController implements ServiceLocato
     public function indexAction()
     {
         //PRG?
-        $form       =   $this->getFormManager()->get('SearchModules\Form\Search');
+        $form       =   $this->getFormManager()->get('SearchForm');
         $request    =   $this->getRequest();
         $term       =   (string) $this->params()->fromQuery('t');
         $entity     =   $this->getSearchService()->newSearchEntity();

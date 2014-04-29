@@ -36,15 +36,16 @@ class Indexer extends EventProvider implements ServiceLocatorAwareInterface
                     $doc = new Document();
 
                     // Store document URL to identify it in the search results
-                    $doc->addField(Field::Text('url',  $module['route'] ));
+                    $doc->addField(Field::Text('route', $module['route'] ));
                     
-                    $doc->addField(Field::Text('url_field', 'slug' ));
-                    $doc->addField(Field::Text('url_params', $dbindex->getSlug() ));
+                    // produces "->getSlug() | ->getUri()" as the getter to allow different field for pages module
+                    $getter = 'get' . ucfirst($module['slug_field']);
+                    $doc->addField(Field::Text('slug', $dbindex->{$getter}() ));
 
                     $doc->addField(Field::Text('title', $dbindex->getTitle() ));
                     $doc->addField(Field::Text('description', $dbindex->getBody() ));
 
-                    // Index document contents
+                    // Indexed document contents
                     $doc->addField(Field::UnStored('contents', $dbindex->getBody()));
                     $index->addDocument($doc);
 
@@ -59,7 +60,7 @@ class Indexer extends EventProvider implements ServiceLocatorAwareInterface
     public function registerCron()
     {
         Cron::register(
-            'foo',
+            'build',
             $this->getCronFrequency(),
             array($this, 'build')
         );
